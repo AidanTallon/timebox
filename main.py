@@ -66,7 +66,7 @@ def write(c):
 
 ## Notification that timebox finished
 def notification_end():
-	print "Timebox finished"
+	sys.stdout.write("Timebox finished")
 	if args.s:
 		pass
 	elif args.song:
