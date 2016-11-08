@@ -10,20 +10,30 @@ parser.add_argument('minutes', help='Number of minutes to timebox.', type=int)
 args = parser.parse_args()
 
 class timebox:
+	"""Timebox object."""
 	def __init__(self, length=10):
 		"""Optional timebox length argument. Default is 10."""
-		self.start_time = datetime.datetime.now()
+		self.start_time = None
 		self.length = datetime.timedelta(minutes=length)
-		self.finish_time = self.start_time + self.length
-		self.notification_times = [self.finish_time]
+		self.finish_time = None
+		self.notification_times = []
 
-	def add_notification(self, minute):
-		"""Add notification alert at specified minutes remaining."""
-		if minute < (self.length.seconds / 60):
-			self.notification_times.append(self.start_time + datetime.timedelta(minutes=minute))
-			self.notification_times.sort()
-		else:
-			pass
+	def start(self):
+		"""Start timebox now."""
+		self.start_time = datetime.datetime.now()
+		self.finish_time = self.start_time + self.length
+		self.notification_times[:] = [n + self.start_time for n in self.notification_times]
+		self.notification_times.append(self.finish_time)
+		self.notification_times.sort()
+
+	def add_notification(self, minute_list):
+		"""Add notification alert at specified minutes remaining. minute_list argument is a list"""		
+		for minute in minute_list:
+			if minute < (self.length.seconds / 60):
+				self.notification_times.append(datetime.timedelta(minutes=minute))
+				self.notification_times.sort()
+			else:
+				pass
 
 	def remove_notification(self, minute):
 		"""Remove notification alert at specified minutes remaining."""
@@ -54,7 +64,8 @@ class timebox:
 
 def main():
 	tb = timebox(args.minutes)
-	tb.add_notification(5) # Placeholder, should be automatically generated based on length or changed according to user
+	tb.add_notification([5, 10, 15, 30, 60]) # Placeholder, should be automatically generated based on length or changed according to user
+	tb.start()
 	while True:
 		sys.stdout.flush()
 		sys.stdout.write("{:0>2d}:{:0>2d}\r".format(int(tb.time_left().seconds / 60), tb.time_left().seconds % 60))
