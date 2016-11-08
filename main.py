@@ -48,6 +48,11 @@ class timebox:
 		time_now = datetime.datetime.now()
 		return self.finish_time - time_now
 
+	def print_time(self):
+		"""Use self.time_left to sys.stdout.write to console."""
+		t = self.time_left()
+		sys.stdout.write("{:0<2d}:{:0<2d}\r".format(int(t.seconds / 60), t.seconds % 60))
+
 	def check(self):
 		"""Checks if notification[0] has been met and removes it if it has."""
 		time_now = datetime.datetime.now()
@@ -66,9 +71,9 @@ def main():
 	tb = timebox(args.minutes)
 	tb.add_notification([5, 10, 15, 30, 60]) # Placeholder, should be automatically generated based on length or changed according to user
 	tb.start()
-	while True:
+	while len(tb.notification_times):
 		sys.stdout.flush()
-		sys.stdout.write("{:0>2d}:{:0>2d}\r".format(int(tb.time_left().seconds / 60), tb.time_left().seconds % 60))
+		tb.print_time()
 		tb.check()
 		time.sleep(0.5)
 
